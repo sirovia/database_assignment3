@@ -5,6 +5,7 @@ from flask import Flask, abort, flash, redirect, render_template, request, url_f
 from sqlalchemy import MetaData, Table, create_engine, func, select
 from sqlalchemy.engine import Engine, Row
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.engine.url import make_url
 
 
 def python_type_for(column) -> Any:
@@ -27,12 +28,20 @@ def coerce_value(column, value: str) -> Any:
     return python_type(value)
 
 
+def normalize_database_url(database_url: str) -> str:
+    """Ensure SQLAlchemy understands URLs from managed hosts like Render."""
+    url = make_url(database_url)
+    if url.drivername == "postgres":
+        url = url.set(drivername="postgresql+psycopg2")
+    return str(url)
+
+
 def make_engine() -> Engine:
     """Create a SQLAlchemy engine using DATABASE_URL or the local default."""
-    database_url = os.getenv(
-        "DATABASE_URL",
-        "postgresql://postgres:01320@localhost:5433/db_1",
-    )
+    database_url = os.getenv("DATABASE_URL")
+    if not database_url:
+        database_url = "sqlite:///local.db"
+    database_url = normalize_database_url(database_url)
     return create_engine(database_url, future=True)
 
 
