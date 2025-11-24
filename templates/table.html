@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Table: {{ table.name }}</h2>
+  <a class="btn btn-primary" href="{{ url_for('create_record', table_name=table.name) }}">Create new</a>
+  <table>
+    <thead>
+      <tr>
+        {% for column in table.columns %}
+          <th>{{ column.name }}</th>
+        {% endfor %}
+        <th class="actions">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+          {% for column in table.columns %}
+            <td>{{ row.data[column.name] }}</td>
+          {% endfor %}
+          <td class="actions">
+            <a class="btn btn-secondary" href="{{ row.edit_url }}">Edit</a>
+            <form class="inline" method="post" action="{{ url_for('delete_record', table_name=table.name) }}">
+              {% for pk_name, pk_value in row.pk.items() %}
+                <input type="hidden" name="{{ pk_name }}" value="{{ pk_value }}">
+              {% endfor %}
+              <button class="btn btn-danger" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="{{ table.columns|length + 1 }}">No rows found.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+

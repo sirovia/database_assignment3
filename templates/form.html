@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>{{ action }} {{ table.name }}</h2>
+  <form method="post">
+    {% for column in table.columns %}
+      {% if not (action == "Create" and column.autoincrement) %}
+        <div class="form-field">
+          <label for="{{ column.name }}">{{ column.name }} ({{ column.type }})</label>
+          {% if column.name in pk_fields %}
+            <input type="text" id="{{ column.name }}" name="{{ column.name }}" value="{{ values.get(column.name, '') }}" readonly>
+          {% elif python_type_for(column).__name__ in ['int', 'float'] %}
+            <input type="number" step="any" id="{{ column.name }}" name="{{ column.name }}" value="{{ values.get(column.name, '') }}">
+          {% elif python_type_for(column).__name__ == 'bool' %}
+            <input type="checkbox" id="{{ column.name }}" name="{{ column.name }}" {% if values.get(column.name) %}checked{% endif %}>
+          {% elif python_type_for(column).__name__ in ['str'] and column.type.length and column.type.length > 200 %}
+            <textarea id="{{ column.name }}" name="{{ column.name }}">{{ values.get(column.name, '') }}</textarea>
+          {% else %}
+            <input type="text" id="{{ column.name }}" name="{{ column.name }}" value="{{ values.get(column.name, '') }}">
+          {% endif %}
+        </div>
+      {% endif %}
+    {% endfor %}
+    <button class="btn btn-primary" type="submit">{{ action }}</button>
+    <a class="btn btn-secondary" href="{{ url_for('view_table', table_name=table.name) }}">Cancel</a>
+  </form>
+{% endblock %}
+

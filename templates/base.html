@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Caregiver Platform Admin</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 2rem; }
+      header { margin-bottom: 1.5rem; }
+      nav a { margin-right: 1rem; }
+      table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+      th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+      .flash { padding: 0.5rem 1rem; margin-bottom: 1rem; border-radius: 4px; }
+      .flash.success { background-color: #e3f7e7; color: #116d29; }
+      .flash.error { background-color: #fdecea; color: #942019; }
+      form.inline { display: inline; }
+      .actions { white-space: nowrap; }
+      .btn { padding: 0.25rem 0.5rem; text-decoration: none; border: 1px solid #555; border-radius: 4px; margin-right: 0.25rem; }
+      .btn-danger { background-color: #f5d0d0; border-color: #c0392b; }
+      .btn-primary { background-color: #d0e8ff; border-color: #1b6ba8; }
+      .btn-secondary { background-color: #eee; }
+      .form-field { margin-bottom: 0.75rem; }
+      label { display: block; font-weight: bold; margin-bottom: 0.25rem; }
+      input, textarea { width: 100%; padding: 0.4rem; box-sizing: border-box; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Caregiver Platform Admin</h1>
+      <nav>
+        <a href="{{ url_for('index') }}">Home</a>
+      </nav>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </body>
+</html>
+
