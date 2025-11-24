@@ -48,6 +48,14 @@ def make_engine() -> Engine:
 
 
 engine = make_engine()
+
+# Initialize database on first run
+try:
+    from init_db import init_database
+    init_database()
+except Exception as e:
+    print(f"Note: Database initialization skipped: {e}")
+
 metadata = MetaData()
 metadata.reflect(bind=engine)
 

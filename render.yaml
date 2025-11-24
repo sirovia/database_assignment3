@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: caregiver-platform
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+
+databases:
+  - name: caregiver-db
+    databaseName: online_platform
+    user: online_platform_user
+
