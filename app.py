@@ -5,7 +5,6 @@ from flask import Flask, abort, flash, redirect, render_template, request, url_f
 from sqlalchemy import MetaData, Table, create_engine, func, select
 from sqlalchemy.engine import Engine, Row
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.engine.url import make_url
 
 
 def python_type_for(column) -> Any:
@@ -30,10 +29,13 @@ def coerce_value(column, value: str) -> Any:
 
 def normalize_database_url(database_url: str) -> str:
     """Ensure SQLAlchemy understands URLs from managed hosts like Render."""
-    url = make_url(database_url)
-    if url.drivername == "postgres":
-        url = url.set(drivername="postgresql+psycopg2")
-    return str(url)
+    database_url = database_url.strip()
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql+psycopg2://", 1)
+    if "sslmode=" not in database_url:
+        separator = "&" if "?" in database_url else "?"
+        database_url = f"{database_url}{separator}sslmode=require"
+    return database_url
 
 
 def make_engine() -> Engine:
